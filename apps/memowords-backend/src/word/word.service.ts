@@ -11,12 +11,21 @@ export class WordService {
     private wordRepository: Repository<WordEntity>,
   ) {}
 
-  getRandomWords(count: number): Promise<Word[]> {
-    return this.wordRepository
-      .createQueryBuilder('word')
-      .distinctOn(['word.english'])
-      .orderBy('RANDOM()')
-      .limit(count)
-      .getMany();
+  async getRandomWords(count: number): Promise<Word[]> {
+    const raw = await this.wordRepository.query(
+      `
+        SELECT * FROM (
+            SELECT DISTINCT ON (english) id, english, russian
+            FROM word_entity
+            ORDER BY english, random()
+        ) w3 ORDER BY random() LIMIT ${count};
+        `,
+    );
+
+    return raw as Word[];
+  }
+
+  getWordById(id: string): Promise<Word | null> {
+    return this.wordRepository.findOneBy({ id });
   }
 }

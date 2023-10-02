@@ -6,5 +6,6 @@ import { WordEntity } from './word.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([WordEntity])],
   providers: [WordService],
+  exports: [WordService],
 })
 export class WordModule {}

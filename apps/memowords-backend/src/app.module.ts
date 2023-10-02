@@ -8,6 +8,7 @@ import configuration from './config/configuration';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { WordModule } from './word/word.module';
 import { ormConfig } from './ormconfig';
+import { LearningModule } from './learning/learning.module';
 
 @Module({
   imports: [
@@ -17,9 +18,14 @@ import { ormConfig } from './ormconfig';
       load: [configuration],
     }),
     TypeOrmModule.forRootAsync({
-      useFactory: () => ormConfig,
+      useFactory: () => ({
+        ...ormConfig,
+        entities: [],
+        autoLoadEntities: true,
+      }),
     }),
     WordModule,
+    LearningModule,
   ],
   controllers: [AppController],
   providers: [AppService],
