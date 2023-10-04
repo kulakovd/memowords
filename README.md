@@ -81,6 +81,11 @@ Create a volume for the postgres database:
 docker volume create memowords-pg-data
 ```
 
+Create a network to connect the app and upstanding web server:
+```sh
+docker network create memowords
+```
+
 To run the bot, execute the following command:
 ```sh
 docker-compose up -d
