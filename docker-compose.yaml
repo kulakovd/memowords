@@ -12,6 +12,7 @@ services:
       - memowords-pg-data:/var/lib/postgresql/data
   app:
     build: .
+    hostname: memowords-entrypoint
     networks:
       - default
       - memowords
