@@ -7,11 +7,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { WordModule } from './word/word.module';
 import { ormConfig } from './ormconfig';
 import { LearningModule } from './learning/learning.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import * as path from 'path';
 
 @Module({
   imports: [
-    UserModule,
-    AuthModule,
+    ServeStaticModule.forRoot({
+      rootPath: path.join(__dirname, 'public'),
+    }),
     ConfigModule.forRoot({
       load: [configuration],
     }),
@@ -22,6 +25,8 @@ import { LearningModule } from './learning/learning.module';
         autoLoadEntities: true,
       }),
     }),
+    UserModule,
+    AuthModule,
     WordModule,
     LearningModule,
   ],

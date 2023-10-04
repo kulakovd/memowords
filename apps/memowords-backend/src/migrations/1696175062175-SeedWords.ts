@@ -1,23 +1,10 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import * as fs from 'fs';
 import { Logger } from '@nestjs/common';
-
-type Words = Array<{
-  en: string;
-  ru: string;
-  tr: string;
-}>;
+import * as parsedWords from './words.json';
 
 export class SeedWords1696175062175 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    const words = await fs.promises.readFile(
-      __dirname + '/words.json',
-      'utf-8',
-    );
-
     const logger = new Logger('SeedWords');
-
-    const parsedWords = JSON.parse(words) as Words;
 
     logger.log(`words from json: ${parsedWords.length}`);
 
@@ -45,6 +32,7 @@ export class SeedWords1696175062175 implements MigrationInterface {
       )
       .join(', ');
 
+    const prevLogger = queryRunner.connection.logger;
     queryRunner.connection.logger = {
       logQuery: () => {},
       logQueryError: () => {},
@@ -54,10 +42,12 @@ export class SeedWords1696175062175 implements MigrationInterface {
       log: () => {},
     };
 
-    return queryRunner.query(
+    await queryRunner.query(
       `INSERT INTO word_entity (english, russian, transcription) VALUES ${valuePlaceholders}`,
       processedWords.flatMap((word) => [word.en, word.ru, word.tr]),
     );
+
+    queryRunner.connection.logger = prevLogger;
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

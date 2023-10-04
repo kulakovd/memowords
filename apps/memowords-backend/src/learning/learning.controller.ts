@@ -3,7 +3,7 @@ import { LearningService } from './learning.service';
 import { Answer } from '../domain/answer';
 import { Request } from 'express';
 
-@Controller('learning')
+@Controller('api/learning')
 export class LearningController {
   constructor(private readonly learningService: LearningService) {}
 

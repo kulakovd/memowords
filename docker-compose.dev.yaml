@@ -1,0 +1,26 @@
+services:
+  pg:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: memowords
+    volumes:
+      - memowords-pg-data-local:/var/lib/postgresql/data
+  caddy:
+    image: caddy:2.4.5-alpine
+    container_name: memowords-caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile.dev:/etc/caddy/Caddyfile
+      - memowords-caddy-data:/data
+volumes:
+  memowords-pg-data-local:
+    external: true
+  memowords-caddy-data:
+    external: true
+
