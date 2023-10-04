@@ -1,4 +1,4 @@
-FROM node:lts-alpine as backend-builder
+FROM node:20-alpine as backend-builder
 
 WORKDIR /app
 COPY apps/memowords-backend/package.json apps/memowords-backend/yarn.lock ./
@@ -6,7 +6,7 @@ RUN yarn install --frozen-lockfile
 COPY apps/memowords-backend .
 RUN yarn build
 
-FROM node:lts-alpine as frontend-builder
+FROM node:20-alpine as frontend-builder
 
 WORKDIR /app
 COPY apps/quiz-mini-app/package.json apps/quiz-mini-app/yarn.lock ./
@@ -14,7 +14,7 @@ RUN yarn install --frozen-lockfile
 COPY apps/quiz-mini-app .
 RUN yarn build
 
-FROM node:lts-alpine
+FROM node:20-alpine
 
 WORKDIR /dist
 COPY --from=backend-builder /app/dist .
