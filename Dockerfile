@@ -5,6 +5,7 @@ COPY apps/memowords-backend/package.json apps/memowords-backend/yarn.lock ./
 RUN yarn install --frozen-lockfile
 COPY apps/memowords-backend .
 RUN yarn build
+RUN yarn install --frozen-lockfile --production
 
 FROM node:20-alpine as frontend-builder
 
