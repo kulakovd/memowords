@@ -8,8 +8,8 @@ export class LearningController {
   constructor(private readonly learningService: LearningService) {}
 
   @Get('next-question')
-  getQuestions() {
-    return this.learningService.nextQuestion();
+  getQuestions(@Req() req: Request) {
+    return this.learningService.nextQuestion(req.userId);
   }
 
   @Post('answer')

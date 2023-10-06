@@ -81,10 +81,11 @@ export class LearningService {
     await this.learningRepository.save(learning);
   }
 
-  async nextQuestion(): Promise<Question> {
+  async nextQuestion(userId: string): Promise<Question> {
     const nextLearning = await this.learningRepository
       .createQueryBuilder('learning')
       .where('learning.nextRepetition <= now()')
+      .andWhere('learning.userId = :userId', { userId })
       .orderBy('learning.nextRepetition', 'ASC')
       .getOne();
 
