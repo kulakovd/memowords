@@ -15,7 +15,7 @@ export class WordService {
     const raw = await this.wordRepository.query(
       `
         SELECT * FROM (
-            SELECT DISTINCT ON (english) id, english, russian
+            SELECT DISTINCT ON (english) id, english, russian, transcription
             FROM word_entity
             ORDER BY english, random()
         ) w3 ORDER BY random() LIMIT ${count};

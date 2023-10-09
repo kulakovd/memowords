@@ -3,6 +3,7 @@ import { useQuestionStore } from '@/stores/question'
 import { storeToRefs } from 'pinia'
 import SwitchTransition from '@/components/SwitchTransition.vue'
 import AnswerOption from '@/components/AnswerOption.vue'
+import ProgressBar from '@/components/ProgressBar.vue'
 
 const questionStore = useQuestionStore()
 
@@ -12,10 +13,12 @@ const { options, correctOption, userAnswer, answerIsShown, questionIsShown, ques
 
 <template>
   <div class="question-animation-container">
+    <ProgressBar />
     <SwitchTransition @showNext="questionStore.showNextQuestion">
       <div v-if="questionIsShown" class="question">
         <div class="word">
-          {{ questionWord }}
+          <span class="word-eng">{{ questionWord?.english }}</span>
+          <span class="transcription">{{ questionWord?.transcription }}</span>
         </div>
         <div class="options">
           <AnswerOption
@@ -40,22 +43,33 @@ const { options, correctOption, userAnswer, answerIsShown, questionIsShown, ques
   height: 100%;
   width: 100%;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .question {
-  height: 100%;
+  flex: 1;
   display: flex;
   flex-direction: column;
 }
 
 .word {
-  display: flex;
   flex: 1;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
   color: var(--color-text);
+  font-size: 1em;
+}
+
+.word-eng {
   font-size: 3rem;
+}
+
+.transcription {
+  font-size: 1.6rem;
 }
 
 .options {

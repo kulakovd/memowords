@@ -1,21 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-
-declare global {
-  interface Window {
-    Telegram: {
-      WebApp: {
-        initData: string
-      }
-    }
-  }
-}
+import { injectTelegram } from '@/stores/utils/injectTelegram'
 
 export const useAuthStore = defineStore('auth', () => {
   const isAuthorized = ref(false)
 
   async function authWithTelegram() {
-    const data = window.Telegram.WebApp.initData
+    const data = injectTelegram().initData
 
     const response = await fetch('/api/auth/telegram', {
       method: 'POST',

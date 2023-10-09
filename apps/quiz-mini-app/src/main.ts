@@ -10,5 +10,9 @@ const app = createApp(App)
 
 app.use(createPinia())
 app.provide('api', createApi().client)
+app.provide(
+  'telegram',
+  (window as unknown as { Telegram: { WebApp: TelegramWebApp } }).Telegram.WebApp
+)
 
 app.mount('#app')
