@@ -5,6 +5,10 @@ import { WordEntity } from '../word/word.entity';
 import { Word } from '../domain/word';
 import { User } from '../domain/user';
 
+/**
+ * Learning entity that represents the learning process of a word for a user.
+ * It contains the information about the next repetition, the easiness factor, etc.
+ */
 @Entity()
 export class LearningEntity implements Learning {
   @PrimaryGeneratedColumn('uuid')

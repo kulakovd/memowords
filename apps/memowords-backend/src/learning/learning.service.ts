@@ -18,6 +18,14 @@ export class LearningService {
     private wordService: WordService,
   ) {}
 
+  /**
+   * If the user answered the word first time,
+   * we create a new learning process for the word.
+   *
+   * @param userId
+   * @param wordId
+   * @private
+   */
   private async getOrCreateLearning(
     userId: string,
     wordId: string,
@@ -47,20 +55,34 @@ export class LearningService {
     return date;
   }
 
+  /**
+   * Reviews the learning process of a word for a user.
+   * It implements the SM-2 algorithm, but it is not a complete implementation.
+   * It uses only 0 and 5 as the possible scores.
+   * - 0 means that the user doesn't know the word or the answer is wrong.
+   * - 5 means that the answer is correct.
+   *
+   * @param answer
+   * @param userId
+   */
   async reviewLearning(answer: Answer, userId: string): Promise<void> {
     const learning = await this.getOrCreateLearning(userId, answer.wordId);
 
     if (answer.idk || !answer.isCorrect) {
+      // When the user doesn't know the answer or the answer is wrong,
+      // we reset the learning process to the beginning, but we keep the easiness factor.
+      // It leads to sooner appearance of the word in the learning process.
       learning.repetitions = 0;
       learning.interval = 1;
     } else if (answer.isCorrect) {
-      const score = 5;
-
       // easiness factor is a value between 1.3 and 2.5
       learning.easinessFactor = Math.max(
         1.3,
-        learning.easinessFactor +
-          (0.1 - (5 - score) * (0.08 + (5 - score) * 0.02)),
+        // Since the score of the correct answer is always 5,
+        // we can simplify the formula to just add 0.1 to the easiness factor.
+        // You can find the original formula in the SM-2 algorithm description:
+        // https://www.supermemo.com/en/blog/application-of-a-computer-to-improve-the-results-obtained-in-working-with-the-supermemo-method
+        learning.easinessFactor + 0.1,
       );
 
       learning.repetitions += 1;
@@ -81,6 +103,14 @@ export class LearningService {
     await this.learningRepository.save(learning);
   }
 
+  /**
+   * Returns the next question for the user
+   * If there are words to review,
+   * a question will be returned for one with the earliest next repetition date.
+   * Otherwise, a question will be returned with random words.
+   *
+   * @param userId
+   */
   async nextQuestion(userId: string): Promise<Question> {
     const nextLearning = await this.learningRepository
       .createQueryBuilder('learning')

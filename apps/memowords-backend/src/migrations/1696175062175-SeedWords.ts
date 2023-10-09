@@ -2,6 +2,10 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 import { Logger } from '@nestjs/common';
 import * as parsedWords from './words.json';
 
+/**
+ * Migration that seeds the database with words.
+ * The words are taken from the words.json file.
+ */
 export class SeedWords1696175062175 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     const logger = new Logger('SeedWords');
@@ -10,6 +14,7 @@ export class SeedWords1696175062175 implements MigrationInterface {
 
     const processedWords = parsedWords.flatMap((word) => {
       const { en, ru, tr } = word;
+      // Data requires some processing and cleaning
       return ru
         .replace(/[(*]+.*?[)*]+/g, '')
         .replaceAll('(', '')

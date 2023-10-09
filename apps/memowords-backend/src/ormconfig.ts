@@ -4,6 +4,10 @@ import { DataSourceOptions } from 'typeorm/data-source/DataSourceOptions';
 
 dotenv.config();
 
+/**
+ * This is the configuration for the TypeORM database connection.
+ * It is used by the TypeORMModule in the AppModule.
+ */
 export const ormConfig: DataSourceOptions = {
   type: 'postgres',
   host: process.env.DB_HOST ?? 'localhost',
@@ -15,6 +19,10 @@ export const ormConfig: DataSourceOptions = {
   migrations: [__dirname + '/migrations/*.{ts,js}'],
 };
 
+/**
+ * This is the TypeORM DataSource instance.
+ * It is used by the typeorm CLI to synchronize the database and run migrations.
+ */
 const dataSource = new DataSource(ormConfig);
 
 export default dataSource;
