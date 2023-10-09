@@ -3,20 +3,32 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 
+/**
+ * The data that Telegram Web App sends to the backend.
+ * This type describes the data partially, because we don't need all the fields.
+ * See full description here: https://core.telegram.org/bots/webapps#webappinitdata
+ */
 type TelegramLoginData = {
   user?: string;
-  query_id?: string;
   hash: string;
 };
 
 const algorithm = { name: 'HMAC', hash: 'SHA-256' };
 
+/**
+ * Converts ArrayBuffer to hex string.
+ * @param buffer The buffer to convert.
+ */
 function buf2hex(buffer: ArrayBuffer) {
   return [...new Uint8Array(buffer)]
     .map((x) => x.toString(16).padStart(2, '0'))
     .join('');
 }
 
+/**
+ * Parses the data from Telegram Web App.
+ * @param data
+ */
 function parseData(data: string): TelegramLoginData {
   const decoded = decodeURIComponent(data);
   return Object.fromEntries(
@@ -24,6 +36,11 @@ function parseData(data: string): TelegramLoginData {
   ) as TelegramLoginData;
 }
 
+/**
+ * Signs the data with the key using HMAC-SHA256 algorithm.
+ * @param data
+ * @param key
+ */
 async function hmacSha256(data: string, key: string) {
   const encoder = new TextEncoder();
 
@@ -48,6 +65,11 @@ export class AuthService {
 
   private _key: CryptoKey;
 
+  /**
+   * Generates a key for validate initData from Telegram Web App.
+   *
+   * @private
+   */
   private get key(): Promise<CryptoKey> {
     if (this._key !== undefined) {
       return Promise.resolve(this._key);
@@ -64,35 +86,53 @@ export class AuthService {
       });
   }
 
-  private async verify(data: string, hash: string) {
+  /**
+   * Verifies that the data is received from Telegram Web App.
+   *
+   * @param data Data received from Telegram Web App
+   * @private
+   * @throws {UnauthorizedException} If the data is not received from Telegram Web App
+   */
+  private async verify(data: TelegramLoginData) {
+    const { hash, ...rest } = data;
+
+    /** String that contains a chain of all received fields, sorted alphabetically, separated by a newline character, in format key=value */
+    const dataCheck = Object.keys(rest)
+      .sort()
+      .map((key) => [key, rest[key as keyof typeof rest]].join('='))
+      .join('\n');
+
     const encoder = new TextEncoder();
 
     const signedData = await crypto.subtle.sign(
       algorithm,
       await this.key,
-      encoder.encode(data),
+      encoder.encode(dataCheck),
     );
 
     const hexData = buf2hex(signedData);
 
+    // The hex representation of the HMAC-SHA256 signature of the data should match the hash field.
+    // Otherwise, the data is not received from Telegram Web App.
     if (hash !== hexData) {
       throw new UnauthorizedException();
     }
   }
 
+  /**
+   * Receives data from Telegram Web App, validates it, and returns JWT token.
+   * Validation algorithm is described here: https://core.telegram.org/bots/webapps#validating-data-received-via-the-mini-app
+   *
+   * @param data String received from Telegram (window.Telegram.WebApp.initData)
+   */
   async telegramLogin(data: string): Promise<string> {
     if (data === '') {
       throw new UnauthorizedException();
     }
 
-    const { hash, ...parsed } = parseData(data);
+    const parsed = parseData(data);
 
-    const dataCheck = Object.keys(parsed)
-      .sort()
-      .map((key) => [key, parsed[key as keyof typeof parsed]].join('='))
-      .join('\n');
-
-    await this.verify(dataCheck, hash);
+    await this.verify(parsed);
 
     const accessTokenSecret = this.configService.get('accessTokenSecret');
 
