@@ -8,6 +8,11 @@ services:
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
       POSTGRES_USER: postgres
       POSTGRES_DB: memowords
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
       - memowords-pg-data:/var/lib/postgresql/data
   app:
@@ -25,7 +30,8 @@ services:
       DB_PASSWORD: "${POSTGRES_PASSWORD}"
       DB_DATABASE: memowords
     depends_on:
-      - pg
+      pg:
+        condition: service_healthy
 volumes:
   memowords-pg-data:
     external: true

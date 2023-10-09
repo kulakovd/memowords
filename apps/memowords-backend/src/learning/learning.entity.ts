@@ -10,13 +10,13 @@ export class LearningEntity implements Learning {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.id)
+  @ManyToOne(() => UserEntity)
   user: User;
 
   @Column()
   userId: string;
 
-  @ManyToOne(() => WordEntity, (word) => word.id)
+  @ManyToOne(() => WordEntity)
   word: Word;
 
   @Column()
