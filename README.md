@@ -2,9 +2,9 @@
 
 The app is available at https://t.me/memowordsbot/app
 
-This is a telegram mini app that helps you to memorize words in English language.
-It implements simplified SM2 algorithm for spaced repetition. 
-Words appears with different frequency depending on how well you remember them.
+This is a Telegram mini-app designed to help you memorize English words
+using a simplified version of the SM2 algorithm for spaced repetition. 
+Words will appear at varying frequencies based on how well you're able to remember them.
 
 See `apps/memowords-backend/src/learning/learning.service.ts` for details on how the algorithm works.
 
