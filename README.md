@@ -1,7 +1,20 @@
 # memowords
 
-This is a telegram mini app that helps you to memorize words in a foreign language.
-It implements simplified SM2 algorithm for spaced repetition.
+The app is available at https://t.me/memowordsbot/app
+
+This is a telegram mini app that helps you to memorize words in English language.
+It implements simplified SM2 algorithm for spaced repetition. 
+Words appears with different frequency depending on how well you remember them.
+
+See `apps/memowords-backend/src/learning/learning.service.ts` for details on how the algorithm works.
+
+## Setup telegram bot (both for local development and production)
+
+Use [BotFather](https://t.me/botfather) to perform the following steps:
+1. Create a new bot
+2. Create web app
+3. For local development, use `https://memobot.dmku.local/` as URL for the app
+4. Setup menu button to open web app. For local development, use `https://memobot.dmku.local/`
 
 ## Local development
 
@@ -91,5 +104,19 @@ To run the bot, execute the following command:
 docker-compose up -d
 ```
 
-This configuration implies that you have a web server running on the host machine that proxies requests to the bot and terminates TLS. 
+### Web server
+
+This configuration implies that you have a web server running on the host machine that proxies requests to the bot and terminates TLS.
 For example, you can use [Caddy](https://caddyserver.com/) for this purpose.
+
+Use network `memowords` to connect your web server to the bot.
+Bot will be available at `http://memowords-entrypoint:3000` inside the network.
+
+With Caddy you can use the following configuration:
+```
+<your domain> {
+    reverse_proxy memowords-entrypoint:3000
+}
+```
+
+And Caddy will automatically generate and renew certificates for your domain using [Let's Encrypt](https://letsencrypt.org/).
