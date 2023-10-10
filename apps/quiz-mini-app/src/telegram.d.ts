@@ -8,4 +8,5 @@ interface TelegramWebApp {
   HapticFeedback: {
     notificationOccurred(type: 'success' | 'error' | 'warning'): void
   }
+  expand(): void
 }
