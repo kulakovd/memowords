@@ -25,7 +25,7 @@ services:
       - "traefik.http.routers.memowords.tls.certresolver=gcloud"
     networks:
       - default
-      - memowords
+      - dmku-dev-deployment-network
     environment:
       TELEGRAM_BOT_TOKEN: "${TELEGRAM_BOT_TOKEN}"
       ACCESS_TOKEN_SECRET: "${ACCESS_TOKEN_SECRET}"
@@ -42,5 +42,5 @@ volumes:
     external: true
 networks:
   default:
-  memowords:
+  dmku-dev-deployment-network:
     external: true
