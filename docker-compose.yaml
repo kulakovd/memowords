@@ -16,8 +16,13 @@ services:
     volumes:
       - memowords-pg-data:/var/lib/postgresql/data
   app:
-    build: .
+    image: memowords_app:latest
     hostname: memowords-entrypoint
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.memowords.entrypoints=websecure"
+      - "traefik.http.routers.memowords.rule=Host(`memowords.dmku.dev`)"
+      - "traefik.http.routers.memowords.tls.certresolver=gcloud"
     networks:
       - default
       - memowords
