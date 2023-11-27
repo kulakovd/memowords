@@ -21,7 +21,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.memowords.entrypoints=websecure"
-      - "traefik.http.routers.memowords.rule=Host(`memowords.dmku.dev`)"
+      - "traefik.http.routers.memowords.rule=Host(`memobot.dmku.dev`)"
       - "traefik.http.routers.memowords.tls.certresolver=gcloud"
     networks:
       - default
